@@ -34,11 +34,12 @@ public class FileUtil {
 
         try {
             line = Files.readAllLines(path, StandardCharsets.UTF_8).get(lineIndex);
-            System.out.println("Line index #" + lineIndex + ": " + line);
+            //System.out.println("Line index #" + lineIndex + ": " + line);
         } catch (IndexOutOfBoundsException e) {
             //return last line if index too high
-            line = Files.readAllLines(path, StandardCharsets.UTF_8).get(lines.size()-1);
-            System.out.println("Line index #" + (lines.size()-1) + ": " + line);
+            //line = Files.readAllLines(path, StandardCharsets.UTF_8).get(lines.size()-1);
+            line = "";
+            //System.out.println("Line index #" + (lines.size()-1) + ": " + line);
         }
 
 
