@@ -1,0 +1,16 @@
+[
+{
+  "modid": "notepad",
+  "name": "Notepad",
+  "description": "A tool for taking notes.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["iron"],
+  "credits": "Remain anonymous, friend.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
