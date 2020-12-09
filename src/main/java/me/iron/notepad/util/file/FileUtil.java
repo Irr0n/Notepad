@@ -1,30 +1,26 @@
 package me.iron.notepad.util.file;
 
-import me.iron.notepad.Notepad;
 import me.iron.notepad.config.NotepadConfig;
-import me.iron.notepad.util.chat.ChatUtil;
-import net.minecraft.client.Minecraft;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class FileUtil {
 
     File file = new NotepadConfig().notesFile;
 
-    Path path = new NotepadConfig().path;
+    Path path = new NotepadConfig().notepadPath;
 
     public void findFile() throws IOException {
         file.createNewFile();
     }
 
-    public String readLine(Integer lineIndex) throws IOException {
+    public String readLine(Path path, Integer lineIndex) throws IOException {
 
-        List<String> lines = readAllLines();
+        List<String> lines = readAllLines(path);
 
         String line;
 
@@ -47,7 +43,7 @@ public class FileUtil {
 
     }
 
-    public List readAllLines() throws IOException {
+    public List readAllLines(Path path) throws IOException {
 
         List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
 
@@ -55,9 +51,9 @@ public class FileUtil {
 
     }
 
-    public String writeLine(Integer lineIndex, String lineString) throws IOException {
+    public String writeLine(Path path, Integer lineIndex, String lineString) throws IOException {
 
-        List<String> lines = readAllLines();
+        List<String> lines = readAllLines(path);
 
         if (lines.isEmpty()) {
             //write to line 0 if file is empty
@@ -79,7 +75,7 @@ public class FileUtil {
         } else {
             System.out.println("yes");
             //replace line
-            lines.remove(lines.indexOf(readLine(lineIndex)));
+            lines.remove(lines.indexOf(readLine(path, lineIndex)));
             lines.add(lineIndex, lineString);
             Files.write(path, lines, StandardCharsets.UTF_8);
 
@@ -87,8 +83,8 @@ public class FileUtil {
         }
     }
 
-    public String deleteLine(Integer lineIndex) throws Exception {
-        List<String> lines = readAllLines();
+    public String deleteLine(Path path, Integer lineIndex) throws Exception {
+        List<String> lines = readAllLines(path);
 
         if (lines.isEmpty()) {
             //do nothing
@@ -111,7 +107,7 @@ public class FileUtil {
             throw new IndexOutOfBoundsException();
         } else {
             //replace line
-            lines.remove(lines.indexOf(readLine(lineIndex)));
+            lines.remove(lines.indexOf(readLine(path, lineIndex)));
             Files.write(path, lines, StandardCharsets.UTF_8);
 
             return "Removed line index #" + lineIndex;
@@ -119,8 +115,8 @@ public class FileUtil {
 
     }
 
-    public String clearFile() throws IOException {
-        List<String> lines = readAllLines();
+    public String clearFile(Path path) throws IOException {
+        List<String> lines = readAllLines(path);
         lines.removeAll(lines);
         Files.write(path, lines, StandardCharsets.UTF_8);
 

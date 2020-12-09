@@ -4,15 +4,11 @@ import me.iron.notepad.config.NotepadConfig;
 import me.iron.notepad.util.chat.ChatUtil;
 
 import me.iron.notepad.util.file.FileUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
-import scala.Int;
 
 import java.awt.*;
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -22,13 +18,13 @@ public class Notepad {
 
     FileUtil f = new FileUtil();
 
-    File file = new NotepadConfig().notesFile;
+    File notesFile = new NotepadConfig().notesFile;
 
-    Path path = new NotepadConfig().path;
+    Path notepadPath = new NotepadConfig().notepadPath;
 
     public void readPage(Integer page) throws IOException {
         try {
-            int totalPages = (int)(f.readAllLines().size() / NotepadConfig.ENTRIES_PER_PAGE);
+            int totalPages = (int)(f.readAllLines(notepadPath).size() / NotepadConfig.ENTRIES_PER_PAGE);
 
             if (totalPages == 0) { totalPages = 1; }
 
@@ -36,7 +32,7 @@ public class Notepad {
 
             ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, ("(Page " + page + " of " + totalPages + ")"));
             for (int i = 0; i <= NotepadConfig.ENTRIES_PER_PAGE; i++) {
-                ChatUtil.addMessage(EnumChatFormatting.GRAY, f.readLine(i + ((page - 1) * NotepadConfig.ENTRIES_PER_PAGE)));
+                ChatUtil.addMessage(EnumChatFormatting.GRAY, f.readLine(notepadPath, (i + ((page - 1) * NotepadConfig.ENTRIES_PER_PAGE))));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,20 +41,20 @@ public class Notepad {
     }
 
     public void deleteLine(Integer lineNumber) throws Exception {
-        f.deleteLine(lineNumber);
+        f.deleteLine(notepadPath, lineNumber);
     }
 
     public void writeLine(Integer lineNumber, String lineString) throws IOException {
-        f.writeLine(lineNumber, lineString);
+        f.writeLine(notepadPath, lineNumber, lineString);
     }
 
     public void writeLine(String lineString) throws IOException {
         //attempt to write to +1 line out of index to write to the end of the file
-        f.writeLine(f.readAllLines().size()+1, lineString);
+        f.writeLine(notepadPath,f.readAllLines(notepadPath).size()+1, lineString);
     }
 
     public void readLine(Integer lineNumber) throws IOException {
-        f.readLine(lineNumber);
+        f.readLine(notepadPath, lineNumber);
     }
 
     public static void printHelp() {
@@ -75,11 +71,11 @@ public class Notepad {
     }
 
     public void resetFile() throws IOException {
-        f.clearFile();
+        f.clearFile(notepadPath);
     }
 
     public void openFile() throws IOException {
-        Desktop.getDesktop().open(file);
+        Desktop.getDesktop().open(notesFile);
     }
 
     protected static void onError() {
