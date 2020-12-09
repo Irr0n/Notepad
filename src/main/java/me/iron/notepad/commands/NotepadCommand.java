@@ -81,21 +81,24 @@ public class NotepadCommand extends CommandBase {
             } else if (args[0].equalsIgnoreCase("help")) {
                 me.iron.notepad.Notepad.printHelp();
             } else {
-                ChatUtil.addMessage("notepad");
+                try {
+                    np.writeLine(convertStringArrayToString(args, " "));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
         } else if (args.length >= 2) {
             if (args[0].equalsIgnoreCase("add")) {
                 try {
                     np.writeLine(convertStringArrayToString(ignoreFirst(args), " "));
-                    ChatUtil.addMessage(convertStringArrayToString(ignoreFirst(args), " "));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete"))) {
                 try {
                     int lineNumber = Integer.parseInt(args[1]);
-                    np.deleteLine(lineNumber);
+                    np.deleteLine(lineNumber-1);
                 } catch (Exception e) {
                     me.iron.notepad.Notepad.printHelp();
                 }

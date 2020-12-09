@@ -29,6 +29,11 @@ public class Notepad {
     public void readPage(Integer page) throws IOException {
         try {
             int totalPages = (int)(f.readAllLines().size() / NotepadConfig.ENTRIES_PER_PAGE);
+
+            if (totalPages == 0) { totalPages = 1; }
+
+            if (page > totalPages) { page = totalPages; }
+
             ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, ("(Page " + page + " of " + totalPages + ")"));
             for (int i = 0; i <= NotepadConfig.ENTRIES_PER_PAGE; i++) {
                 ChatUtil.addMessage(EnumChatFormatting.GRAY, f.readLine(i + ((page - 1) * NotepadConfig.ENTRIES_PER_PAGE)));
