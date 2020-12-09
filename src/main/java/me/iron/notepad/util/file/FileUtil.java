@@ -10,12 +10,16 @@ import java.util.List;
 
 public class FileUtil {
 
-    File file = new NotepadConfig().notesFile;
+    File notesFile = new NotepadConfig().notesFile;
+    File categoriesListFile = new NotepadConfig().categoriesListFile;
+    File categoriesFile = new NotepadConfig().categoriesFile;
 
-    Path path = new NotepadConfig().notepadPath;
+    Path notepadPath = new NotepadConfig().notepadPath;
 
     public void findFile() throws IOException {
-        file.createNewFile();
+        notesFile.createNewFile();
+        categoriesListFile.createNewFile();
+        categoriesFile.createNewFile();
     }
 
     public String readLine(Path path, Integer lineIndex) throws IOException {
@@ -73,7 +77,6 @@ public class FileUtil {
         } else if (lineIndex < 0 || !(lineIndex == (int)lineIndex)) {
             throw new IndexOutOfBoundsException();
         } else {
-            System.out.println("yes");
             //replace line
             lines.remove(lines.indexOf(readLine(path, lineIndex)));
             lines.add(lineIndex, lineString);
