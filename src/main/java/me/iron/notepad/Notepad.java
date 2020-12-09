@@ -27,6 +27,7 @@ public class Notepad {
     Path categoriesPath = new NotepadConfig().categoriesPath;
 
     public void readPage(Path path, Integer page) throws IOException {
+        //todo: implement category color to text lines
         try {
             int totalPages = (int)(f.readAllLines(path).size() / NotepadConfig.ENTRIES_PER_PAGE);
 
@@ -82,7 +83,7 @@ public class Notepad {
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note add <category name> add <content> ", EnumChatFormatting.DARK_GRAY, "(Adds note with category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category add | new <category name> <color> ", EnumChatFormatting.DARK_GRAY, "(Adds category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category remove <category name | line> ", EnumChatFormatting.DARK_GRAY, "(Removes category)");
-            ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <line> <category name> ", EnumChatFormatting.DARK_GRAY, "(Applies or removes category)");
+            //ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <line> <category name> ", EnumChatFormatting.DARK_GRAY, "(Applies or removes category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category color <category name | line> <color> ", EnumChatFormatting.DARK_GRAY, "(Changes category color)");
         } else {
             printHelp(1);
@@ -98,11 +99,13 @@ public class Notepad {
         Desktop.getDesktop().open(file);
     }
 
-    public void readCategories() throws IOException {
+    public List<String> readCategories() throws IOException {
         ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, ("(Categories)"));
+        List<String> categories = null;
         for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
             try {
                 String[] arrayLine = c.splitComponentString(f.readLine(categoriesListPath, i));
+                categories.add(arrayLine[0]);
 
                 ChatUtil.addMessage(c.parseColor(arrayLine[1].trim()), arrayLine[0]);
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -111,6 +114,7 @@ public class Notepad {
 
         }
 
+        return categories;
     }
 
     protected static void onError() {

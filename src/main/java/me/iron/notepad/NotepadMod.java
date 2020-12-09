@@ -24,8 +24,7 @@ public class NotepadMod
 
 
     @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    public void init(FMLInitializationEvent event) {
         new Notepad();
         new FileUtil();
         new ChatUtil();

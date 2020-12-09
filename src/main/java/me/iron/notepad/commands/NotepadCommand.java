@@ -13,6 +13,7 @@ import me.iron.notepad.util.chat.ChatUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import tv.twitch.chat.Chat;
 
@@ -30,6 +31,15 @@ public class NotepadCommand extends CommandBase {
 
     Path categoriesListPath = new NotepadConfig().categoriesListPath;
     Path categoriesPath = new NotepadConfig().categoriesPath;
+
+    @Override
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+        return super.addTabCompletionOptions(sender, args, pos);
+    }
+
+    public List<String> categories() throws IOException {
+        return np.readCategories();
+    }
 
     public NotepadCommand() {
 
@@ -107,27 +117,58 @@ public class NotepadCommand extends CommandBase {
             }
 
         } else if (args.length >= 2) {
+
             if (args[0].equalsIgnoreCase("add")) {
+
                 try {
-                    np.writeLine(notepadPath, convertStringArrayToString(ignoreFirst(args), " "));
+                    if (categories().contains(args[1])) {
+
+                        //todo: add note with category
+
+                        if (args[2].equalsIgnoreCase("add")) {
+
+                            //add note content
+
+                        } else {
+
+                            //try to add note content
+
+                        }
+
+
+                    } else {
+                        try {
+                            np.writeLine(notepadPath, convertStringArrayToString(ignoreFirst(args), " "));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             } else if (args.length == 2 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete"))) {
+
                 try {
                     int lineNumber = Integer.parseInt(args[1]);
                     np.deleteLine(notepadPath, lineNumber-1);
                 } catch (Exception e) {
                     me.iron.notepad.Notepad.printHelp(1);
                 }
+
             } else if (args[0].equalsIgnoreCase("page")) {
+
                 try {
                     int page = Integer.parseInt(args[1]);
                     np.readPage(notepadPath, page);
                 } catch (NumberFormatException | IOException e) {
                     me.iron.notepad.Notepad.printHelp(1);
                 }
+
             } else if (args[0].equalsIgnoreCase("category") || args[0].equalsIgnoreCase("categories") || args[0].equalsIgnoreCase("folder") || args[0].equalsIgnoreCase("folders")) {
+
+                //todo: update category reference lines upon notes change
+
                 if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("new")) {
                     if (c.colorsList.contains(String.valueOf(args[3]))) {
                         try {
@@ -223,8 +264,49 @@ public class NotepadCommand extends CommandBase {
                     } else {
                         ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Color: " + color + " was not found."));
                     }
+                } else {
+                    //set to -1 as to not conflict with any lines
+                    int lineNumber = -1;
+                    try {
+                        lineNumber = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException exception) {
+                        ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Invalid line number."));
+                    }
+                    try {
+                        if (lineNumber != -1 && lineNumber <= np.readAllLines(notepadPath).size()) {
+                            try {
+                                if (categories().contains(args[2])) {
+
+                                    //todo: assign line the give category
+
+                                } else {
+                                    ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Category: " + String.valueOf(args[2])+ " was not found."));
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Line number out of index."));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    try {
+                        if (categories().contains(args[1])) {
+
+                            //todo: print note lines of said category
+
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
+
             } else if (args[0].equalsIgnoreCase("help")) {
+
                 try {
                     int page = Integer.parseInt(args[1]);
                     ChatUtil.addMessage(String.valueOf(page));
@@ -232,6 +314,7 @@ public class NotepadCommand extends CommandBase {
                 } catch (NumberFormatException e) {
                     me.iron.notepad.Notepad.printHelp(1);
                 }
+
             } else {
                 try {
                     np.writeLine(notepadPath, convertStringArrayToString(args, " "));
@@ -239,7 +322,9 @@ public class NotepadCommand extends CommandBase {
                     e.printStackTrace();
                 }
             }
+
         } else {
+
             try {
                 int page = Integer.parseInt(args[0]);
                 np.readPage(notepadPath, page);
@@ -251,6 +336,13 @@ public class NotepadCommand extends CommandBase {
 
     protected String[] ignoreFirst(String[] str) {
         String[] out = new String[str.length - 1];
+        for (int i = 1; i < str.length; i++)
+            out[i - 1] = str[i];
+        return out;
+    }
+
+    protected String[] ignoreFirst(String[] str, Integer items) {
+        String[] out = new String[str.length - items];
         for (int i = 1; i < str.length; i++)
             out[i - 1] = str[i];
         return out;
