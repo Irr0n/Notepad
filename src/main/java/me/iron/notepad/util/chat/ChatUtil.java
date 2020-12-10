@@ -126,8 +126,8 @@ public class ChatUtil {
 
     public String[] ignoreFirst(String[] str, Integer items) {
         String[] out = new String[str.length - items];
-        for (int i = 1; i < str.length; i++)
-            out[i - 1] = str[i];
+        for (int i = items; i < str.length; i++)
+            out[i - items] = str[i];
         return out;
     }
 

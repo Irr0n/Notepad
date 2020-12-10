@@ -10,7 +10,6 @@ import tv.twitch.chat.Chat;
 
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -27,8 +26,10 @@ public class Notepad {
     Path categoriesListPath = new NotepadConfig().categoriesListPath;
     Path categoriesPath = new NotepadConfig().categoriesPath;
 
-    public void readPage(Path path, Integer page) throws IOException {
+    public void readPage(Path path, Integer page) {
+
         //todo: implement category color to text lines
+
         try {
             int totalPages = (int)(f.readAllLines(path).size() / NotepadConfig.ENTRIES_PER_PAGE);
 
@@ -85,7 +86,7 @@ public class Notepad {
             ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, "- Notepad Category Usage - 2/2");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category ", EnumChatFormatting.DARK_GRAY, "(Shows categories)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <category name>", EnumChatFormatting.DARK_GRAY, "(Shows from category)");
-            ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note add <category name> add <content> ", EnumChatFormatting.DARK_GRAY, "(Adds note with category)");
+            ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <category name> add <content> ", EnumChatFormatting.DARK_GRAY, "(Adds note with category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category add | new <category name> <color> ", EnumChatFormatting.DARK_GRAY, "(Adds category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category remove <category name | line> ", EnumChatFormatting.DARK_GRAY, "(Removes category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <line> <category name> ", EnumChatFormatting.DARK_GRAY, "(Applies or removes category)");
@@ -104,14 +105,11 @@ public class Notepad {
         Desktop.getDesktop().open(file);
     }
 
-    public List<String> readCategories(boolean getLines) throws IOException {
+    public void readCategories(boolean getLines) throws IOException {
         ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, ("(Categories)"));
-        ArrayList<String> categoriesName = new ArrayList<String>();
-        categoriesName.add("");
         for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
             try {
                 String[] arrayLine = c.splitComponentString(f.readLine(categoriesListPath, i));
-                categoriesName.add(String.valueOf(arrayLine[0]));
 
                 ChatUtil.addMessage(c.parseColor(arrayLine[1].trim()), arrayLine[0]);
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -120,11 +118,10 @@ public class Notepad {
 
         }
 
-        return categoriesName;
     }
 
     public List<String> readCategories() throws IOException {
-        ArrayList<String> categoriesName = new ArrayList<String>();
+        ArrayList<String> categoriesName = new ArrayList<>();
         categoriesName.add("");
         for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
             try {

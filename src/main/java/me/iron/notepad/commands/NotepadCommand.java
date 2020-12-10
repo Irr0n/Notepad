@@ -5,6 +5,7 @@ import me.iron.notepad.Notepad;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,11 +75,7 @@ public class NotepadCommand extends CommandBase {
 
         if (args.length == 0) {
 
-            try {
-                np.readPage(notepadPath, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            np.readPage(notepadPath, 1);
 
         } else if (args.length == 1) {
             if (
@@ -124,28 +121,7 @@ public class NotepadCommand extends CommandBase {
             if (args[0].equalsIgnoreCase("add")) {
 
                 try {
-                    if (categories().contains(args[1])) {
-
-                        //todo: add note with category
-
-                        if (args[2].equalsIgnoreCase("add")) {
-
-                            //add note content
-
-                        } else {
-
-                            //try to add note content
-
-                        }
-
-
-                    } else {
-                        try {
-                            np.writeLine(notepadPath, convertStringArrayToString(c.ignoreFirst(args), " "));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    np.writeLine(notepadPath, convertStringArrayToString(c.ignoreFirst(args), " "));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -164,13 +140,12 @@ public class NotepadCommand extends CommandBase {
                 try {
                     int page = Integer.parseInt(args[1]);
                     np.readPage(notepadPath, page);
-                } catch (NumberFormatException | IOException e) {
+                } catch (NumberFormatException e) {
                     me.iron.notepad.Notepad.printHelp(1);
                 }
 
             } else if (args[0].equalsIgnoreCase("category") || args[0].equalsIgnoreCase("categories") || args[0].equalsIgnoreCase("folder") || args[0].equalsIgnoreCase("folders")) {
 
-                //todo: update category reference lines upon notes change
 
                 if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("new")) {
                     if (c.colorsList.contains(String.valueOf(args[3]))) {
@@ -271,48 +246,62 @@ public class NotepadCommand extends CommandBase {
                     //set to -1 as to not conflict with any lines
                     int lineNumber = -1;
                     boolean useLineNumberInput = false;
-                    try {
-                        lineNumber = Integer.parseInt(args[1]);
-                        ChatUtil.addMessage("Parsed Int as: " + lineNumber);
-                        useLineNumberInput = true;
-                    } catch (NumberFormatException exception) {
-                        ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Invalid line number."));
-                    }
-                    try {
-                        if (lineNumber != -1 && lineNumber <= np.readAllLines(notepadPath).size() && useLineNumberInput) {
-                            try {
-                                if (categories().contains(args[2])) {
-
-                                    String line = np.readLine(notepadPath, lineNumber, true);
-                                    ChatUtil.addMessage(line);
-
-                                    np.writeLine(notepadPath, lineNumber, line + " &c" + String.valueOf(args[2]));
-
-
-                                } else {
-                                    try {
-                                        ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Category: " + String.valueOf(args[2])+ " was not found."));
-                                    } catch (ArrayIndexOutOfBoundsException e) {
-                                        ChatUtil.addMessage(EnumChatFormatting.GRAY, "Category was not provided.");
-                                    }
-
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Line number out of index."));
+                    if (args.length == 3) {
+                        try {
+                            lineNumber = Integer.parseInt(args[1]);
+                            ChatUtil.addMessage("Parsed Int as: " + lineNumber);
+                            useLineNumberInput = true;
+                        } catch (NumberFormatException exception) {
+                            //invalid line number
+                            //do nothing
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
 
+                        try {
+                            if (lineNumber != -1 && lineNumber <= np.readAllLines(notepadPath).size() && useLineNumberInput) {
+                                try {
+                                    if (categories().contains(args[2])) {
+
+                                        String line = np.readLine(notepadPath, lineNumber-1, true);
+
+                                        np.writeLine(notepadPath, lineNumber-1, line + " &c" + String.valueOf(args[2]));
+
+
+                                    } else {
+                                        ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Category: " + String.valueOf(args[2]) + " was not found."));
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else if (useLineNumberInput) {
+                                ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Line number out of index."));
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    } else if (useLineNumberInput) {
+                        ChatUtil.addMessage(EnumChatFormatting.GRAY, "Category was not provided.");
+                    }
 
                     try {
                         if (categories().contains(args[1])) {
-                            ChatUtil.addMessage("Found category: " + String.valueOf(args[1]));
+                            try {
 
-                            //todo: print note lines of said category
+                                if (args[2].equalsIgnoreCase("add")) {
+
+                                    np.writeLine(notepadPath, (convertStringArrayToString(c.ignoreFirst(args, 3), " ")) + " &c" + String.valueOf(args[1]));
+
+                                } else if (args[2] != null) {
+
+                                    np.writeLine(notepadPath, (convertStringArrayToString(c.ignoreFirst(args, 2), " ")) + " &c" + String.valueOf(args[1]));
+                                }
+
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                ChatUtil.addMessage("Found category: " + String.valueOf(args[1]));
+
+                                //todo: print note lines of said category
+                            }
+
 
                         }
                     } catch (IOException e) {
@@ -344,7 +333,7 @@ public class NotepadCommand extends CommandBase {
             try {
                 int page = Integer.parseInt(args[0]);
                 np.readPage(notepadPath, page);
-            } catch (NumberFormatException | IOException e) {
+            } catch (NumberFormatException e) {
                 me.iron.notepad.Notepad.printHelp(1);
             }
         }
