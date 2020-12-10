@@ -116,4 +116,25 @@ public class ChatUtil {
 
         return arrayOfString;
     }
+
+    public String[] ignoreFirst(String[] str) {
+        String[] out = new String[str.length - 1];
+        for (int i = 1; i < str.length; i++)
+            out[i - 1] = str[i];
+        return out;
+    }
+
+    public String[] ignoreFirst(String[] str, Integer items) {
+        String[] out = new String[str.length - items];
+        for (int i = 1; i < str.length; i++)
+            out[i - 1] = str[i];
+        return out;
+    }
+
+    public static String convertStringArrayToString(String[] strArr, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (String str : strArr)
+            sb.append(str).append(delimiter);
+        return sb.substring(0, sb.length() - 1);
+    }
 }

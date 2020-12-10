@@ -1,5 +1,6 @@
 package me.iron.notepad;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.iron.notepad.config.NotepadConfig;
 import me.iron.notepad.util.chat.ChatUtil;
 
@@ -66,6 +67,10 @@ public class Notepad {
         f.readLine(path, lineNumber);
     }
 
+    public String readLine(Path path, Integer lineNumber, Boolean getLine) throws IOException {
+        return f.readLine(path, lineNumber);
+    }
+
     public static void printHelp(Integer page) {
         if (page == 1) {
             ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, "- Notepad Usage - 1/2");
@@ -83,7 +88,7 @@ public class Notepad {
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note add <category name> add <content> ", EnumChatFormatting.DARK_GRAY, "(Adds note with category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category add | new <category name> <color> ", EnumChatFormatting.DARK_GRAY, "(Adds category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category remove <category name | line> ", EnumChatFormatting.DARK_GRAY, "(Removes category)");
-            //ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <line> <category name> ", EnumChatFormatting.DARK_GRAY, "(Applies or removes category)");
+            ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category <line> <category name> ", EnumChatFormatting.DARK_GRAY, "(Applies or removes category)");
             ChatUtil.addMessage(EnumChatFormatting.GRAY, " /note category color <category name | line> <color> ", EnumChatFormatting.DARK_GRAY, "(Changes category color)");
         } else {
             printHelp(1);
@@ -99,13 +104,14 @@ public class Notepad {
         Desktop.getDesktop().open(file);
     }
 
-    public List<String> readCategories() throws IOException {
+    public List<String> readCategories(boolean getLines) throws IOException {
         ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, ("(Categories)"));
-        List<String> categories = null;
+        ArrayList<String> categoriesName = new ArrayList<String>();
+        categoriesName.add("");
         for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
             try {
                 String[] arrayLine = c.splitComponentString(f.readLine(categoriesListPath, i));
-                categories.add(arrayLine[0]);
+                categoriesName.add(String.valueOf(arrayLine[0]));
 
                 ChatUtil.addMessage(c.parseColor(arrayLine[1].trim()), arrayLine[0]);
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -114,7 +120,23 @@ public class Notepad {
 
         }
 
-        return categories;
+        return categoriesName;
+    }
+
+    public List<String> readCategories() throws IOException {
+        ArrayList<String> categoriesName = new ArrayList<String>();
+        categoriesName.add("");
+        for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
+            try {
+                String[] arrayLine = c.splitComponentString(f.readLine(categoriesListPath, i));
+                categoriesName.add(String.valueOf(arrayLine[0]));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                break;
+            }
+
+        }
+
+        return categoriesName;
     }
 
     protected static void onError() {

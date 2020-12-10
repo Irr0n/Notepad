@@ -1,5 +1,6 @@
 package me.iron.notepad.commands;
 
+import com.ibm.icu.text.ArabicShapingException;
 import me.iron.notepad.Notepad;
 
 import java.io.File;
@@ -16,6 +17,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import tv.twitch.chat.Chat;
+
+import static me.iron.notepad.util.chat.ChatUtil.convertStringArrayToString;
 
 public class NotepadCommand extends CommandBase {
     
@@ -102,9 +105,9 @@ public class NotepadCommand extends CommandBase {
                 for (String color : c.colorsList) {
                     ChatUtil.addMessage(c.parseColor(color), color);
                 }
-            }else if (args[0].equalsIgnoreCase("category") || args[0].equalsIgnoreCase("categories")) {
+            } else if (args[0].equalsIgnoreCase("category") || args[0].equalsIgnoreCase("categories")) {
                 try {
-                    np.readCategories();
+                    np.readCategories(true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -138,7 +141,7 @@ public class NotepadCommand extends CommandBase {
 
                     } else {
                         try {
-                            np.writeLine(notepadPath, convertStringArrayToString(ignoreFirst(args), " "));
+                            np.writeLine(notepadPath, convertStringArrayToString(c.ignoreFirst(args), " "));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -267,20 +270,32 @@ public class NotepadCommand extends CommandBase {
                 } else {
                     //set to -1 as to not conflict with any lines
                     int lineNumber = -1;
+                    boolean useLineNumberInput = false;
                     try {
                         lineNumber = Integer.parseInt(args[1]);
+                        ChatUtil.addMessage("Parsed Int as: " + lineNumber);
+                        useLineNumberInput = true;
                     } catch (NumberFormatException exception) {
                         ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Invalid line number."));
                     }
                     try {
-                        if (lineNumber != -1 && lineNumber <= np.readAllLines(notepadPath).size()) {
+                        if (lineNumber != -1 && lineNumber <= np.readAllLines(notepadPath).size() && useLineNumberInput) {
                             try {
                                 if (categories().contains(args[2])) {
 
-                                    //todo: assign line the give category
+                                    String line = np.readLine(notepadPath, lineNumber, true);
+                                    ChatUtil.addMessage(line);
+
+                                    np.writeLine(notepadPath, lineNumber, line + " &c" + String.valueOf(args[2]));
+
 
                                 } else {
-                                    ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Category: " + String.valueOf(args[2])+ " was not found."));
+                                    try {
+                                        ChatUtil.addMessage(EnumChatFormatting.GRAY, ("Category: " + String.valueOf(args[2])+ " was not found."));
+                                    } catch (ArrayIndexOutOfBoundsException e) {
+                                        ChatUtil.addMessage(EnumChatFormatting.GRAY, "Category was not provided.");
+                                    }
+
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -295,6 +310,7 @@ public class NotepadCommand extends CommandBase {
 
                     try {
                         if (categories().contains(args[1])) {
+                            ChatUtil.addMessage("Found category: " + String.valueOf(args[1]));
 
                             //todo: print note lines of said category
 
@@ -332,27 +348,6 @@ public class NotepadCommand extends CommandBase {
                 me.iron.notepad.Notepad.printHelp(1);
             }
         }
-    }
-
-    protected String[] ignoreFirst(String[] str) {
-        String[] out = new String[str.length - 1];
-        for (int i = 1; i < str.length; i++)
-            out[i - 1] = str[i];
-        return out;
-    }
-
-    protected String[] ignoreFirst(String[] str, Integer items) {
-        String[] out = new String[str.length - items];
-        for (int i = 1; i < str.length; i++)
-            out[i - 1] = str[i];
-        return out;
-    }
-
-    private static String convertStringArrayToString(String[] strArr, String delimiter) {
-        StringBuilder sb = new StringBuilder();
-        for (String str : strArr)
-            sb.append(str).append(delimiter);
-        return sb.substring(0, sb.length() - 1);
     }
 
 }
