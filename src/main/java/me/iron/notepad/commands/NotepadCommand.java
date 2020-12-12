@@ -1,11 +1,9 @@
 package me.iron.notepad.commands;
 
-import com.ibm.icu.text.ArabicShapingException;
 import me.iron.notepad.Notepad;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +15,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
-import tv.twitch.chat.Chat;
 
 import static me.iron.notepad.util.chat.ChatUtil.convertStringArrayToString;
 
@@ -34,7 +31,6 @@ public class NotepadCommand extends CommandBase {
     Path notepadPath = new NotepadConfig().notepadPath;
 
     Path categoriesListPath = new NotepadConfig().categoriesListPath;
-    Path categoriesPath = new NotepadConfig().categoriesPath;
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
@@ -42,7 +38,7 @@ public class NotepadCommand extends CommandBase {
     }
 
     public List<String> categories() throws IOException {
-        return np.readCategories();
+        return np.listCategories();
     }
 
     public NotepadCommand() {
@@ -104,7 +100,7 @@ public class NotepadCommand extends CommandBase {
                 }
             } else if (args[0].equalsIgnoreCase("category") || args[0].equalsIgnoreCase("categories")) {
                 try {
-                    np.readCategories(true);
+                    np.listCategories(true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -297,9 +293,9 @@ public class NotepadCommand extends CommandBase {
                                 }
 
                             } catch (ArrayIndexOutOfBoundsException e) {
-                                ChatUtil.addMessage("Found category: " + String.valueOf(args[1]));
 
-                                //todo: print note lines of said category
+                                np.readCategory(String.valueOf(args[1]));
+
                             }
 
 

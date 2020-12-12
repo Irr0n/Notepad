@@ -12,14 +12,12 @@ public class FileUtil {
 
     File notesFile = new NotepadConfig().notesFile;
     File categoriesListFile = new NotepadConfig().categoriesListFile;
-    File categoriesFile = new NotepadConfig().categoriesFile;
 
     Path notepadPath = new NotepadConfig().notepadPath;
 
     public void findFile() throws IOException {
         notesFile.createNewFile();
         categoriesListFile.createNewFile();
-        categoriesFile.createNewFile();
     }
 
     public String readLine(Path path, Integer lineIndex) throws IOException {

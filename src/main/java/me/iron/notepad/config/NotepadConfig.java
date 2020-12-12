@@ -16,12 +16,10 @@ public class NotepadConfig {
     //public File notesFile = new File(String.valueOf(Minecraft.getMinecraft().mcDataDir + "config/" + FILENAME));
     public File notesFile = new File("config/" + NOTEPAD_FILENAME);
     public File categoriesListFile = new File("config/" + CATEGORIES_LIST_FILENAME);
-    public File categoriesFile = new File("config/" + CATEGORIES_FILENAME);
 
     //public Path path = Paths.get(String.valueOf(Minecraft.getMinecraft().mcDataDir + "config/" + FILENAME));
     public Path notepadPath = Paths.get("config/" + NOTEPAD_FILENAME);
     public Path categoriesListPath = Paths.get("config/" + CATEGORIES_LIST_FILENAME);
-    public Path categoriesPath = Paths.get("config/" + CATEGORIES_FILENAME);
 
 }
 

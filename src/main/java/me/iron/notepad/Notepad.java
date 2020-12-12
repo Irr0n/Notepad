@@ -24,7 +24,6 @@ public class Notepad {
 
     Path notepadPath = new NotepadConfig().notepadPath;
     Path categoriesListPath = new NotepadConfig().categoriesListPath;
-    Path categoriesPath = new NotepadConfig().categoriesPath;
 
     public void readPage(Path path, Integer page) {
 
@@ -105,7 +104,51 @@ public class Notepad {
         Desktop.getDesktop().open(file);
     }
 
-    public void readCategories(boolean getLines) throws IOException {
+
+    public void readCategory(String categoryName) throws IOException {
+        if (listCategories().contains(categoryName)) {
+            for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
+                try {
+                    String[] arrayLine = c.splitComponentString(f.readLine(categoriesListPath, i));
+
+                    if (arrayLine[0].equalsIgnoreCase(categoryName)) {
+                        // attempt to parse color
+                        if (c.colorsList.contains(arrayLine[1].trim())) {
+                            ChatUtil.addMessage(c.parseColor(arrayLine[1].trim()), ("(Category " + arrayLine[0]) + ")");
+                        } else {
+                            //color parse failure = no formatting
+                            ChatUtil.addMessage(("(Category " + arrayLine[0]) + ")");
+                        }
+
+                        for (int j = 0; j <= readAllLines(notepadPath).size(); j++) {
+                            String line = f.readLine(notepadPath, j);
+                            try {
+                                String categoryValue = line.substring(line.lastIndexOf("&c")).replace("&c", "");
+                                String noteValue = line.replace(("&c" + categoryName), "");
+
+                                if (categoryValue.equalsIgnoreCase(categoryName)) {
+                                    ChatUtil.addMessage(noteValue);
+                                }
+
+                            } catch (StringIndexOutOfBoundsException e) {
+                                //pass on line.
+                            }
+
+                        }
+
+                    }
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    break;
+                }
+
+            }
+        } else {
+            ChatUtil.addMessage(EnumChatFormatting.GRAY, "Invalid category: " + categoryName);
+        }
+    }
+
+    public void listCategories(boolean getLines) throws IOException {
         ChatUtil.addMessage(EnumChatFormatting.DARK_GRAY, ("(Categories)"));
         for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {
             try {
@@ -120,7 +163,7 @@ public class Notepad {
 
     }
 
-    public List<String> readCategories() throws IOException {
+    public List<String> listCategories() throws IOException {
         ArrayList<String> categoriesName = new ArrayList<>();
         categoriesName.add("");
         for (int i = 0; i <= readAllLines(categoriesListPath).size(); i++) {

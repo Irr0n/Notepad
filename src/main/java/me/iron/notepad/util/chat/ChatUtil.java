@@ -117,6 +117,15 @@ public class ChatUtil {
         return arrayOfString;
     }
 
+    public String[] splitNoteLine(String line, String category) {
+        String[] values = new String[1];
+
+        values[0] = line.substring(line.lastIndexOf("&c")).replace("&c", "");
+        values[1] = line.replace(("&c" + category), "");
+
+        return values;
+    }
+
     public String[] ignoreFirst(String[] str) {
         String[] out = new String[str.length - 1];
         for (int i = 1; i < str.length; i++)
